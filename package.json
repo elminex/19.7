@@ -1,0 +1,53 @@
+{
+  "name": "19.7",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "start": "http-server",
+    "test": "npm-run-all test:*",
+    "init-project": "npm install && npm-run-all init:*",
+    "init:dirs": "mkdirp sass css vendor images js",
+    "init:files": "touch README.md index.html sass/style.scss js/script.js",
+    "init:gitignore": "curl https://raw.githubusercontent.com/github/gitignore/master/Node.gitignore -o .gitignore",
+    "build": "npm-run-all build:*",
+    "build:babel": "babel js/*.js -d compiled",
+    "build:clean": "rimraf css/*.*",
+    "build:sass": "node-sass --output-style compact -o css sass",
+    "build:autoprefixer": "autoprefixer-cli css/style.css",
+    "build-dev:sass": "node-sass --output-style expanded --source-map true -o css sass",
+    "watch": "npm-run-all build -p watch:*",
+    "watch:sass": "node-sass --output-style expanded --source-map true -o css sass --watch",
+    "watch:autoprefixer": "onchange -d 100 css.style.css -- autoprefixer-cli -o css/style/prefixed.css css/style.css",
+    "watch:browsersync": "browser-sync start --server --browser chrome --files components/*.js js/*.js css/*.css *html",
+    "watch:sassprefixer": "onchange sass/*.scss -- npm-run-all build:sass build:autoprefixer"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.4",
+    "@babel/preset-env": "^7.4.4",
+    "@babel/preset-react": "^7.0.0",
+    "autoprefixer-cli": "^1.0.0",
+    "babel-polyfill": "^6.26.0",
+    "browser-sync": "^2.26.3",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.17.2",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-react": "^7.13.0",
+    "globstar": "^1.0.0",
+    "http-server": "^0.11.1",
+    "mkdirp": "^0.5.1",
+    "node-sass": "^4.11.0",
+    "npm-run-all": "^4.1.5",
+    "onchange": "^5.2.0",
+    "rimraf": "^2.6.3"
+  },
+  "dependencies": {
+    "babel-standalone": "^6.26.0",
+    "browserslist": "^4.5.6"
+  }
+}
