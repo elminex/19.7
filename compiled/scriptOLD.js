@@ -54,6 +54,7 @@ class Stopwatch {
     if (!this.running) return;
     this.calculate();
     this.print();
+    console.log(this.watch);
   }
 
   calculate() {

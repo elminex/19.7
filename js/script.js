@@ -10,7 +10,7 @@ class Stopwatch extends React.Component {
   render() {
     return (
       <div className="stopwatch">
-        {this.props.format(this.props.time)}
+        {this.props.time}
       </div>
     );
   }
@@ -25,9 +25,9 @@ class Result extends React.Component {
 
   render() {
     return (
-      <div className="search-result">
+      <ul className="results">
         {this.times}
-      </div>
+      </ul>
     );
   }
 }
@@ -61,10 +61,9 @@ class App extends React.Component {
   }
 
   result() {
-    const list = document.querySelector('.results');
     if (
       (this.state.times.miliseconds !== 0 || this.state.times.seconds !== 0 || this.state.times.minutes !== 0)
-      && (list.childNodes.length === 0 || this.state.result[this.state.result.length - 1] !== this.format(this.state.times))
+      && (this.state.result.length === 0 || this.state.result[this.state.result.length - 1] !== this.format(this.state.times))
     ) {
       this.setState(() => this.state.result.push((this.format(this.state.times))));
     }
@@ -96,8 +95,9 @@ class App extends React.Component {
     });
   }
 
+
   stop() {
-    this.setState({running: false });
+    this.setState({ running: false });
     clearInterval(this.watch);
     this.result();
   }
@@ -110,12 +110,9 @@ class App extends React.Component {
           <button className="button" id="stop" onClick={this.stop.bind(this)}>Stop</button>
           <button className="button" id="reset" onClick={this.reset.bind(this)}>Reset</button>
         </nav>
-        <Stopwatch time={this.state.times} format={this.format} />
-
+        <Stopwatch time={this.format(this.state.times)} />
         <div className="results-wrapper">
-          <ul className="results">
-            <Result results={this.state.result} />
-          </ul>
+          <Result results={this.state.result} />
           <button className="button" id="clear" onClick={() => { this.setState({ result: [] }) }} >Clear</button>
         </div>
       </div>

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp */
 function pad0(value) {
   let result = value.toString();
 
@@ -6,6 +7,30 @@ function pad0(value) {
   }
 
   return result;
+}
+
+class Stopwatch extends React.Component {
+  render() {
+    return React.createElement("div", {
+      className: "stopwatch"
+    }, this.props.time);
+  }
+
+}
+
+class Result extends React.Component {
+  get times() {
+    if (this.props.results.length) {
+      return this.props.results.map(time => React.createElement("li", null, time));
+    }
+  }
+
+  render() {
+    return React.createElement("ul", {
+      className: "results"
+    }, this.times);
+  }
+
 }
 
 class App extends React.Component {
@@ -17,27 +42,19 @@ class App extends React.Component {
         minutes: 0,
         seconds: 0,
         miliseconds: 0
-      }
+      },
+      result: []
     };
   }
 
-  componentDidMount() {
-    this.reset();
-  }
-
   reset() {
-    this.setState(() => {
-      this.state.times = {
+    this.setState({
+      times: {
         minutes: 0,
         seconds: 0,
         miliseconds: 0
-      };
-      this.print();
+      }
     });
-  }
-
-  print() {
-    document.querySelector('.stopwatch').innerText = this.format(this.state.times);
   }
 
   format(times) {
@@ -45,19 +62,15 @@ class App extends React.Component {
   }
 
   result() {
-    const item = document.createElement('li');
-    const list = document.querySelector('.results');
-
-    if ((this.state.times.miliseconds !== 0 || this.state.times.seconds !== 0 || this.state.times.minutes !== 0) && (list.childNodes.length === 0 || list.lastChild.innerHTML !== this.format(this.state.times))) {
-      item.innerHTML = this.format(this.state.times);
-      list.appendChild(item);
+    if ((this.state.times.miliseconds !== 0 || this.state.times.seconds !== 0 || this.state.times.minutes !== 0) && (this.state.result.length === 0 || this.state.result[this.state.result.length - 1] !== this.format(this.state.times))) {
+      this.setState(() => this.state.result.push(this.format(this.state.times)));
     }
   }
 
   start() {
     if (!this.state.running) {
-      this.setState(() => {
-        this.state.running = true;
+      this.setState({
+        running: true
       });
       this.watch = setInterval(() => this.step(), 10);
     }
@@ -66,26 +79,27 @@ class App extends React.Component {
   step() {
     if (!this.state.running) return;
     this.calculate();
-    this.print();
   }
 
   calculate() {
-    this.state.times.miliseconds += 1;
+    this.setState(prevState => {
+      prevState.times.miliseconds += 1;
 
-    if (this.state.times.miliseconds >= 100) {
-      this.state.times.seconds += 1;
-      this.state.times.miliseconds = 0;
-    }
+      if (this.state.times.miliseconds >= 100) {
+        this.state.times.seconds += 1;
+        this.state.times.miliseconds = 0;
+      }
 
-    if (this.state.times.seconds >= 60) {
-      this.state.times.minutes += 1;
-      this.state.times.seconds = 0;
-    }
+      if (this.state.times.seconds >= 60) {
+        this.state.times.minutes += 1;
+        this.state.times.seconds = 0;
+      }
+    });
   }
 
   stop() {
-    this.setState(() => {
-      this.state.running = false;
+    this.setState({
+      running: false
     });
     clearInterval(this.watch);
     this.result();
@@ -108,17 +122,19 @@ class App extends React.Component {
       className: "button",
       id: "reset",
       onClick: this.reset.bind(this)
-    }, "Reset")), React.createElement("div", {
-      className: "stopwatch"
-    }, this.format(this.state.times)), React.createElement("div", {
+    }, "Reset")), React.createElement(Stopwatch, {
+      time: this.format(this.state.times)
+    }), React.createElement("div", {
       className: "results-wrapper"
-    }, React.createElement("ul", {
-      className: "results"
+    }, React.createElement(Result, {
+      results: this.state.result
     }), React.createElement("button", {
       className: "button",
       id: "clear",
       onClick: () => {
-        document.querySelector('.results').innerHTML = '';
+        this.setState({
+          result: []
+        });
       }
     }, "Clear")));
   }
