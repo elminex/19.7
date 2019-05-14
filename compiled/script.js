@@ -110,7 +110,7 @@ class App extends React.Component {
       onClick: this.reset.bind(this)
     }, "Reset")), React.createElement("div", {
       className: "stopwatch"
-    }), React.createElement("div", {
+    }, this.format(this.state.times)), React.createElement("div", {
       className: "results-wrapper"
     }, React.createElement("ul", {
       className: "results"
