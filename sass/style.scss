@@ -40,6 +40,7 @@ body {
     font-size: 3rem;
     margin-bottom: 20px;
     background-color: #403AA1;
+    box-shadow: 1px 1px 4px #403AA1;
     color: #f2f2f2;
     border-radius: 6px;
 }
@@ -50,6 +51,7 @@ body {
     font-size: 1.5rem;
     margin: 10px;
     &-wrapper {
+        background-color: #e2e1f7;
         border: 1px solid #403AA1;
         box-shadow: 1px 1px 7px #403AA1;
         border-radius: 6px;

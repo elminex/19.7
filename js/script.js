@@ -1,3 +1,4 @@
+/* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable react/no-multi-comp */
 function pad0(value) {
   let result = value.toString();
@@ -6,7 +7,7 @@ function pad0(value) {
   }
   return result;
 }
-class Stopwatch extends React.Component {
+class Stopwatch extends React.PureComponent {
   render() {
     return (
       <div className="stopwatch">
@@ -19,7 +20,7 @@ class Stopwatch extends React.Component {
 class Result extends React.Component {
   get times() {
     if (this.props.results.length) {
-      return this.props.results.map(time => <li>{time}</li>);
+      return this.props.results.map((time, index) => <li key={index}>{time}</li>);
     }
   }
 
@@ -36,6 +37,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      watch: 0,
       running: false,
       times: {
         minutes: 0,
@@ -44,9 +46,19 @@ class App extends React.Component {
       },
       result: [],
     };
+    this.currTime = {
+      minutes: 0,
+      seconds: 0,
+      miliseconds: 0,
+    };
   }
 
   reset() {
+    this.currTime = {
+      minutes: 0,
+      seconds: 0,
+      miliseconds: 0,
+    };
     this.setState({
       times: {
         minutes: 0,
@@ -56,8 +68,8 @@ class App extends React.Component {
     });
   }
 
-  format(times) {
-    return `${pad0(times.minutes)}:${pad0(times.seconds)}:${pad0(Math.floor(times.miliseconds))}`;
+  format(time) {
+    return `${pad0(time.minutes)}:${pad0(time.seconds)}:${pad0(Math.floor(time.miliseconds))}`;
   }
 
   result() {
@@ -72,7 +84,7 @@ class App extends React.Component {
   start() {
     if (!this.state.running) {
       this.setState({ running: true });
-      this.watch = setInterval(() => this.step(), 10);
+      this.state.watch = setInterval(() => this.step(), 10);
     }
   }
 
@@ -82,24 +94,30 @@ class App extends React.Component {
   }
 
   calculate() {
-    this.setState((prevState) => {
-      prevState.times.miliseconds += 1;
-      if (this.state.times.miliseconds >= 100) {
-        this.state.times.seconds += 1;
-        this.state.times.miliseconds = 0;
-      }
-      if (this.state.times.seconds >= 60) {
-        this.state.times.minutes += 1;
-        this.state.times.seconds = 0;
+    this.currTime.miliseconds += 1;
+    if (this.currTime.miliseconds >= 100) {
+      this.currTime.seconds += 1;
+      this.currTime.miliseconds = 0;
+    }
+    if (this.currTime.seconds >= 60) {
+      this.currTime.minutes += 1;
+      this.currTime.seconds = 0;
+    }
+    this.setState({
+      times: {
+        minutes: this.currTime.minutes,
+        seconds: this.currTime.seconds,
+        miliseconds: this.currTime.miliseconds,
       }
     });
   }
 
-
   stop() {
-    this.setState({ running: false });
-    clearInterval(this.watch);
-    this.result();
+    if (this.state.running) {
+      this.setState({ running: false });
+      clearInterval(this.state.watch);
+      this.result();
+    }
   }
 
   render() {
